@@ -8,14 +8,11 @@ import BigNumber from "bignumber.js";
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import BeatLoader from "react-spinners/BeatLoader";
-import { FiHeart } from "react-icons/fi";
 import { RiHeart3Fill, RiHeart3Line } from "react-icons/ri";
 import './App.css';
 import crowdfundAbi from './contract/crowdfund.abi.json';
 import erc20Abi from './contract/erc20.abi.json';
 import { AbiItem } from 'web3-utils'
-import { consoleLogger } from '@celo/base';
-import { doesNotMatch } from 'assert';
 
 const ERC20_DECIMALS = 18;
 const CrownfundContractAddress = "0x5f3D4a88E9d28a2436F4e5b6BA26860824Ee2f3b";
