@@ -1,8 +1,6 @@
 # Donation for all
 
-This dapps allow anyone to start their own donation campaign in cUSD. This allows anyone that is need of fund to 
-ask for help. They can also like or unlike the donation campaigns to get it back later. There is not limit so the owner
-of the campaign and complete and claim the funds anytime they needed to. The live demo is on [here](https://hungry-feynman-002838.netlify.app/).
+Donation for all is a dapps that allow anyone to start their own donation campaign in cUSD. This project is inspired by all the flooding recently happened in my country. This allows anyone that is need of fund to ask for help. They can also like the donation campaigns to get it back later. There is no time limit so the owner of the campaign and complete and claim the funds anytime they needed to. The live demo is on [here](https://hungry-feynman-002838.netlify.app/).
 
 
 ## Available Scripts
