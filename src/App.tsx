@@ -622,7 +622,7 @@ const App = () => {
           onClick={() => {
             setIsOpen(true)
           }}
-          className="w-full mt-3 rounded-md border-black border-2 p-3 grow hover:bg-stone-800">Add Campaign</button>
+          className="w-full mt-3 rounded-md border-black border-2 p-3 grow hover:bg-stone-800 hover:text-white">Add Campaign</button>
 
         <div className="grid lg:grid-cols-3 grid-cols-1 gap-4">
           {campaigns.map((campaign, index) => {
