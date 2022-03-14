@@ -28,23 +28,34 @@ contract Crowdfund {
     uint internal campaignsLength = 0;
     mapping (uint => Campaign) internal campaigns;
     mapping (address => uint[]) userFavouriteCampaigns;
+    
+
+    // for likes and unlike a campaign
+    // Just this required to check if a user has like a campaign or not
+    mapping(address => mapping(uint256 => bool)) internal likedCampaign;
+
+    // events for specific functions
+    event campaignAdded(address indexed, string name);
+    event campaignClosed(address indexed, string name);
+    event donationReceived(address indexed, uint256 amount, uint256 campaignIndex);
+    event campaignLiked(address indexed, uint256 index);
+
 
     function writeCampaign(
         string memory _name,
         string memory _image,
         string memory _description
     ) public {
-        bool _completed = false;
-        uint _amountFunded = 0;
         campaigns[campaignsLength] = Campaign(
             payable(msg.sender),
             _name,
             _image,
             _description,
-            _amountFunded,
-            _completed
+            0,
+            false
         );
         campaignsLength++;
+        emit campaignAdded(msg.sender, _name);
     }
 
     function readCampaign(uint _index) public view returns(
@@ -53,7 +64,8 @@ contract Crowdfund {
         string memory,
         string memory,
         uint,
-        bool
+        bool,
+        bool // this bool is to check if the user has already liked this particular campaign or not
     ) {
         return (
             campaigns[_index].owner,
@@ -61,26 +73,36 @@ contract Crowdfund {
             campaigns[_index].image,
             campaigns[_index].description,
             campaigns[_index].amountFunded,
-            campaigns[_index].completed
+            campaigns[_index].completed,
+            likedCampaign[msg.sender][_index] // If user has liked, you can update your frontend accordingly. This essentially replaces the getLikedCampaigns().
         );
     }
 
     function closeCampaignAndClaim(uint _index) public {
-        require(campaigns[_index].owner == msg.sender);
         require(
+            campaigns[_index].owner == msg.sender,
+            "Only the campaign owner can call this function"
+        );
+        if (campaigns[_index].amountFunded > 0) { // checking if the campaign is funded or not, if not then no need to take overhead of transfer function.
+            require(
             IERC20Token(cUsdTokenAddress).transfer(
                 campaigns[_index].owner,
                 campaigns[_index].amountFunded
             ),
             "Transfer failed"
         );
+        }
         campaigns[_index].completed = true;
+        emit campaignClosed(msg.sender, campaigns[_index].name);
     }
 
     function donateToCampaign(uint _index, uint _amount) public payable {
         // require(IERC20Token(cUsdTokenAddress).balanceOf(address(msg.sender)) > 0);
         // IERC20Token(cUsdTokenAddress).transferFrom(msg.sender, payable(address(this)), _amount);
-        require(campaigns[_index].owner != msg.sender);
+        require(
+            campaigns[_index].owner != msg.sender,
+            "Campaign owner cannot donate to its own Campaign"
+        );
         require(
             IERC20Token(cUsdTokenAddress).transferFrom(
                 msg.sender,
@@ -90,6 +112,7 @@ contract Crowdfund {
             "Transfer failed"
         );
         campaigns[_index].amountFunded += _amount;
+        emit donationReceived(msg.sender, _amount, _index);
     }
 
     function getCampaignsLength() public view returns (uint) {
@@ -99,25 +122,11 @@ contract Crowdfund {
     function likeCampaign(uint _index) public {
         require(_index <= campaignsLength -1);
         userFavouriteCampaigns[msg.sender].push(_index);
-    }
-
-    function unlikeCampaign(uint _index) public {
-        require(_index <= campaignsLength -1);
-        for (uint i = 0; i < userFavouriteCampaigns[msg.sender].length; i++) {
-            // if index is found in user like array
-            if (userFavouriteCampaigns[msg.sender][i] == _index) {
-                
-                // remove from array
-                for (uint j = i; j < userFavouriteCampaigns[msg.sender].length-1; j++){
-                    userFavouriteCampaigns[msg.sender][i] = userFavouriteCampaigns[msg.sender][i+1];
-                }
-                userFavouriteCampaigns[msg.sender].pop();
-                break;
-            }
+        if (likedCampaign[msg.sender][_index] == false) { // checks if campaign already liked, if not then like it
+            likedCampaign[msg.sender][_index] = true;
+            emit campaignLiked(msg.sender, _index);
+        } else { // if yes then dislike it
+            likedCampaign[msg.sender][_index] = false;
         }
-    }
-
-    function getLikedCampaigns() public view returns(uint[] memory){
-        return userFavouriteCampaigns[msg.sender];
     }
 }
