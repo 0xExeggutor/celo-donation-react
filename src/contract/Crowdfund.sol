@@ -190,17 +190,3 @@ contract Crowdfund {
         return userFavouriteCampaigns[msg.sender];
     }
 }
-
-/*
-    1)Extended the concept of claiming the funds whenever the user wishes
-        1.1) made a separate function where the user could claim the money without 
-            the need to close the campaign
-        1.2)Added moneyClaimed and the money available to be claimed properties to the 
-            struct so that the data will be visible to all the users of the dapp
-    
-    2)Made the likes publicly visible as the users can see the importance of the campaign 
-      by the number of likes it has.
-        2.1)Refactored parts of the code to make this feature work securely
-    3)Added useful events
-    4)Added comments on the code for documentation
-*/
